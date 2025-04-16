@@ -7,4 +7,6 @@ class EnvSettings(BaseSettings):
     SECRET_KEY: str
 
 
-envSettings = EnvSettings()
+_envSettings = EnvSettings()
+_envSettings.DATABASE_URL = _envSettings.DATABASE_URL.replace("postgres://", "postgresql://", 1)
+envSettings = _envSettings
