@@ -37,8 +37,6 @@ class Authorizations:
         self.roles = roles
 
     def __call__(self, user_principal: UserPrincipal = Depends(authenticated)):
-        print(user_principal.role)
-        print(self.roles)
         if user_principal.role in [r.value for r in self.roles]:
             return user_principal
         raise ForbiddenException()
