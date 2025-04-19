@@ -15,8 +15,8 @@ class ProfessorSchema(BaseSchema):
     id: UUID
     fullname: str
     cpf: str
-    email: str | None
-    phone: str | None
+    email: str | None = None
+    phone: str | None = None
     date_of_birth: date
     sex: SexEnum
     archived: bool
