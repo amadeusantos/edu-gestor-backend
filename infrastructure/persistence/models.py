@@ -28,7 +28,7 @@ class UserModel(Entity):
 class ProfessorModel(EntityBase, Entity):
     __tablename__ = "professors"
 
-    fullname = Column(String, nullable=False, index=True)
+    fullname = Column(String(60), nullable=False, index=True)
     cpf = Column(String(14), nullable=False, index=True)
     email = Column(String(64), index=True)
     phone = Column(String(15))

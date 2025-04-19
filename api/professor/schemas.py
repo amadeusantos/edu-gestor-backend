@@ -19,28 +19,33 @@ class ProfessorSchema(BaseSchema):
     phone: str | None
     date_of_birth: date
     sex: SexEnum
+    archived: bool
     disciplines: List = []
+
 
 class ProfessorPaginationSchema(PaginationSchema):
     results: List[ProfessorSchema]
 
+
 class ProfessorUpdateSchema(InputSchema):
     fullname: str
-    email: str | None
-    phone: str | None
+    email: str | None = None
+    phone: str | None = None
     cpf: str
     date_of_birth: datetime
     sex: SexEnum
 
     @field_validator("email")
     def validator_email(cls, value):
+        if value == "":
+            return None
         if value and not validate_email(str(value)):
             raise ProfessorEmailInvalidException()
         return value
 
     @field_validator("phone")
     def validator_phone(cls, value):
-        if not value:
+        if not value or value == "":
             return None
         if not validate_phone(str(value)):
             raise ProfessorPhoneInvalidException()
@@ -51,6 +56,7 @@ class ProfessorUpdateSchema(InputSchema):
         if not validate_cpf(str(value)):
             raise ProfessorCPFInvalidException()
         return format_cpf(str(value))
+
 
 class ProfessorCreateSchema(ProfessorUpdateSchema):
     pass
