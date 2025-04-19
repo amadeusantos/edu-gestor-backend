@@ -16,11 +16,11 @@ class StudentSchema(BaseSchema):
     fullname: str
     cpf: str
     enrollment: str
-    father_name: str | None
-    mother_name: str | None
+    father_name: str | None = None
+    mother_name: str | None = None
     responsible: str
     phone: str
-    email: str | None
+    email: str | None = None
     date_of_birth: date
     sex: SexEnum
     classroom_id: UUID | None = None
@@ -32,11 +32,11 @@ class StudentPaginationSchema(PaginationSchema):
 
 class StudentUpdateSchema(InputSchema):
     fullname: str
-    father_name: str | None
-    mother_name: str | None
+    father_name: str | None = None
+    mother_name: str | None = None
     responsible: str
     phone: str
-    email: str | None
+    email: str | None = None
     cpf: str
     enrollment: str
     date_of_birth: datetime
