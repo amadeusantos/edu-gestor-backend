@@ -4,6 +4,7 @@ from starlette.responses import JSONResponse
 
 from api.auth.routers import router as auth_router
 from api.user.routers import router as user_router
+from api.professor.routers import router as professor_router
 from api.exceptions import ServiceException
 
 app = FastAPI()
@@ -23,3 +24,4 @@ async def service_exception_handler(_, exc: ServiceException):
 
 app.include_router(auth_router)
 app.include_router(user_router)
+app.include_router(professor_router)
