@@ -1,9 +1,11 @@
 import uuid
+from typing import List
 
-from sqlalchemy import Column, UUID, Boolean, String, Enum, LargeBinary, Date
+from sqlalchemy import Column, UUID, Boolean, String, Enum, LargeBinary, Date, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship, Mapped
 
-from infrastructure.persistence.enums import RoleEnum, SexEnum
+from infrastructure.persistence.enums import RoleEnum, SexEnum, ShiftEnum
 
 Entity = declarative_base()
 metadata = Entity.metadata
@@ -49,3 +51,26 @@ class StudentModel(EntityBase, Entity):
     email = Column(String(64))
     date_of_birth = Column(Date, nullable=False)
     sex = Column(Enum(SexEnum), nullable=False)
+    classroom_id = Column(ForeignKey('classrooms.id'))
+
+    classroom: Mapped["ClassroomModel"] = relationship("ClassroomModel", back_populates="students")
+
+
+class ClassroomModel(EntityBase, Entity):
+    __tablename__ = "classrooms"
+
+    name = Column(String(32), nullable=False, index=True)
+    shift = Column(Enum(ShiftEnum), nullable=False, index=True)
+
+    students: Mapped[List["StudentModel"]] = relationship("StudentModel", back_populates="classroom")
+
+
+class DisciplineModel(EntityBase, Entity):
+    __tablename__ = "disciplines"
+
+    name = Column(String(64), nullable=False, index=True)
+    professor_id = Column(ForeignKey('professors.id'))
+    classroom_id = Column(ForeignKey("classrooms.id"))
+
+    professor: Mapped["ProfessorModel"] = relationship("ProfessorModel")
+    classroom: Mapped["ClassroomModel"] = relationship("ClassroomModel")

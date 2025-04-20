@@ -6,6 +6,8 @@ from api.auth.routers import router as auth_router
 from api.user.routers import router as user_router
 from api.professor.routers import router as professor_router
 from api.student.routers import router as student_router
+from api.classroom.routers import router as classroom_router
+from api.discipline.routers import router as discipline_router
 from api.exceptions import ServiceException
 
 app = FastAPI()
@@ -27,3 +29,5 @@ app.include_router(auth_router)
 app.include_router(user_router)
 app.include_router(professor_router)
 app.include_router(student_router)
+app.include_router(classroom_router)
+app.include_router(discipline_router)

@@ -7,6 +7,11 @@ class RoleEnum(Enum):
     STUDENT ='STUDENT'
     RESPONSIBLE ='RESPONSIBLE'
 
+class ShiftEnum(Enum):
+    MORNING = 'MORNING'
+    AFTERNOON = 'AFTERNOON'
+    NIGHT = 'NIGHT'
+
 class SexEnum(Enum):
     MALE = "MALE"
     FEMALE = "FEMALE"

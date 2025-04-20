@@ -4,7 +4,7 @@ from typing import List
 
 from pydantic import field_validator
 
-from api.schemas import PaginationSchema, BaseSchema, InputSchema
+from api.schemas import PaginationSchema, BaseSchema, InputSchema, ClassroomMinimalSchema
 from api.student.exceptions import StudentCPFInvalidException, StudentEmailInvalidException, \
     StudentPhoneInvalidException
 from api.utils import validate_cpf, format_cpf, validate_email, validate_phone, format_phone
@@ -24,6 +24,7 @@ class StudentSchema(BaseSchema):
     date_of_birth: date
     sex: SexEnum
     classroom_id: UUID | None = None
+    classroom: ClassroomMinimalSchema | None = None
 
 
 class StudentPaginationSchema(PaginationSchema):
