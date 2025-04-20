@@ -1,4 +1,5 @@
 alembic
+dynaconf
 fastapi
 pyjwt
 sqlalchemy
