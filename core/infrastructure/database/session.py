@@ -28,7 +28,10 @@ T = TypeVar("T")
 
 def db_session(func: Callable[..., T]) -> Callable[..., T]:
     def wrapper(*args, **kwargs):
-        session_holder = LazySessionHolder()
+        engine = kwargs.get("engine")
+        if type(engine) != DatabaseEngine:
+            raise TypeError("engine must be of type DatabaseEngine")
+        session_holder = LazySessionHolder(engine)
         try:
             response = func(*args, **kwargs, session_holder=session_holder)
             return response

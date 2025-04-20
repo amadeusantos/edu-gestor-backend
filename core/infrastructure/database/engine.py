@@ -2,13 +2,14 @@ from typing import Optional
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+from core.infrastructure.database.tables import Base
 from core.infrastructure.environment.manage import settings
 
 
 class DatabaseEngine:
     def __init__(self) -> None:
         self.engine: Optional[Engine] = create_engine(settings.DB_URI)
-        # TODO: Base.metadata.bind = self.engine
+        Base.metadata.bind = self.engine
 
     def get_session(self) -> scoped_session:
         if not self.engine:

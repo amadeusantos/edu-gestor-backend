@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 from enum import Enum
 from typing import Optional
 from sqlalchemy import UUID, DateTime
@@ -11,10 +12,15 @@ Base = declarative_base()
 
 
 class BaseEntity(Base):  # type: ignore
-    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    created_at: Mapped[DateTime] = mapped_column(default=func.now())
-    updated_at: Mapped[DateTime] = mapped_column(
-        default=func.now(), onupdate=func.now()
+    __abstract__ = True
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.now, index=True
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=True, onupdate=datetime.now, index=True
     )
 
 
