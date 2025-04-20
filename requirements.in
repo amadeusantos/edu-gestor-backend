@@ -1,0 +1,4 @@
+alembic
+fastapi
+pyjwt
+sqlalchemy
