@@ -1,4 +1,5 @@
 from typing import Callable, Optional, TypeVar
+from fastapi import Request
 from sqlalchemy.orm import scoped_session
 from core.infrastructure.database.engine import DatabaseEngine
 
@@ -28,9 +29,16 @@ T = TypeVar("T")
 
 def db_session(func: Callable[..., T]) -> Callable[..., T]:
     def wrapper(*args, **kwargs):
-        engine = kwargs.get("engine")
-        if type(engine) != DatabaseEngine:
+        print(kwargs)
+        request = kwargs.get("request")
+        if not isinstance(request, Request):
+            print(type(request))
+            raise TypeError("request must be of type Request")
+
+        engine = request.app.state.db_engine
+        if not isinstance(engine, DatabaseEngine):
             raise TypeError("engine must be of type DatabaseEngine")
+
         session_holder = LazySessionHolder(engine)
         try:
             response = func(*args, **kwargs, session_holder=session_holder)

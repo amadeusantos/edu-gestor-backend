@@ -18,4 +18,4 @@ router = APIRouter()
 def login(
     request_body: AuthenticationRequest, request: Request
 ) -> AuthenticationResponse:
-    return login_service(request_body, engine=request.app.state.db_engine)
+    return login_service(request_body, request=request)

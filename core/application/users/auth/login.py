@@ -8,16 +8,18 @@ from core.infrastructure.security.password import verify_password
 
 
 @db_session
-def login(request: AuthenticationRequest, **kwargs) -> AuthenticationResponse:
+def login(request_body: AuthenticationRequest, **kwargs) -> AuthenticationResponse:
     session = get_session(**kwargs)
 
-    if (user := session.query(User).filter_by(email=request.email).first()) is None:
+    if (
+        user := session.query(User).filter_by(email=request_body.email).first()
+    ) is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
         )
 
-    if not verify_password(request.password, user.password):
+    if not verify_password(request_body.password, user.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
