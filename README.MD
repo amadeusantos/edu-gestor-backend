@@ -44,7 +44,7 @@
 
 **Observação:** Todas as extensões acima são disponibilizadas pela Microsoft.
 
-## Execução da aplicação
+### Execução da aplicação
 
 ```bash
 # Local
