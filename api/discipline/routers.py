@@ -14,7 +14,7 @@ from infrastructure.persistence.db_session import open_db_session
 from infrastructure.persistence.enums import RoleEnum
 from infrastructure.persistence.models import DisciplineModel
 
-router = APIRouter(prefix="/discipline", tags=["Discipline"])
+router = APIRouter(prefix="/disciplines", tags=["Discipline"])
 
 
 def query_disciplines(session: Session):
