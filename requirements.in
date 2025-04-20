@@ -1,5 +1,6 @@
 alembic
 dynaconf
-fastapi
+fastapi[standard]
+psycopg2-binary
 pyjwt
 sqlalchemy

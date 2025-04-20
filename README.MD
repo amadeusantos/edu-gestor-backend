@@ -43,3 +43,10 @@
   - **ID da extensão**: ms-python.black-formatter;
 
 **Observação:** Todas as extensões acima são disponibilizadas pela Microsoft.
+
+## Execução da aplicação
+
+```bash
+# Local
+fastapi dev .\api\manage.py
+```
