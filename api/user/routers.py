@@ -41,6 +41,25 @@ def query_user_by_email(session: Session, email: str):
 
     return user
 
+def user_model(user_dto: UserCreateSchema, user: UserModel):
+    match user_dto.role:
+        case RoleEnum.ADMIN:
+            user.student_id = None
+            user.professor_id = None
+        case RoleEnum.COORDINATOR:
+            user.student_id = None
+            user.professor_id = None
+        case RoleEnum.PROFESSOR:
+            user.student_id = None
+            user.professor_id = user_dto.professor_id
+        case RoleEnum.STUDENT:
+            user.student_id = user_dto.student_id
+            user.professor_id = None
+        case RoleEnum.RESPONSIBLE:
+            user.student_id = user_dto.student_id
+            user.professor_id = None
+    return user
+
 
 @router.get("")
 def users_pagination(
@@ -92,6 +111,7 @@ def create_user(
         password=password_hash,
         role=dto.role,
     )
+    user_model(dto, user)
     session.add(user)
     session.commit()
     return {}
@@ -106,9 +126,9 @@ def update_user(
 ) -> UserSchema:
     user = query_first(session, id)
     validate_update_user(session, dto, user.id)
-    session.query(UserModel).where(UserModel.id == user.id).update(
-        dto.model_dump(exclude={"password", "student_id", "professor_id"})
-    )
+    user.email = dto.email
+    user.role = dto.role
+    user_model(dto, user)
     if dto.password:
         password_hash = bcrypt.hashpw(dto.password.encode(), bcrypt.gensalt())
         user.password = password_hash

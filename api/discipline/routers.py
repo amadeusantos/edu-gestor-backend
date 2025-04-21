@@ -17,12 +17,15 @@ from infrastructure.persistence.models import DisciplineModel
 router = APIRouter(prefix="/disciplines", tags=["Discipline"])
 
 
-def query_disciplines(session: Session):
-    return session.query(DisciplineModel).where(DisciplineModel.deleted == False)
+def query_disciplines(session: Session, user_principal: UserPrincipal):
+    filters = []
+    if user_principal.role == RoleEnum.PROFESSOR.value:
+        filters.append(DisciplineModel.professor_id == user_principal.professor_id)
+    return session.query(DisciplineModel).where(DisciplineModel.deleted == False, *filters)
 
 
-def query_first(session: Session, id: UUID):
-    query = query_disciplines(session)
+def query_first(session: Session, id: UUID, user_principal: UserPrincipal):
+    query = query_disciplines(session, user_principal)
     discipline = query.where(DisciplineModel.id == id).first()
 
     if not discipline:
@@ -40,7 +43,7 @@ def disciplines_pagination(
         user_principal: UserPrincipal = Depends(
             Authorizations([RoleEnum.ADMIN, RoleEnum.COORDINATOR, RoleEnum.PROFESSOR]))
 ) -> DisciplinePaginationSchema:
-    query = query_disciplines(session)
+    query = query_disciplines(session, user_principal)
     filters = []
 
     if search:
@@ -58,7 +61,7 @@ def get_discipline(
         user_principal: UserPrincipal = Depends(
             Authorizations([RoleEnum.ADMIN, RoleEnum.COORDINATOR, RoleEnum.PROFESSOR]))
 ) -> DisciplineSchema:
-    return query_first(session, id)
+    return query_first(session, id, user_principal)
 
 
 @router.post("")
@@ -81,7 +84,7 @@ def update_student(
         session: Session = Depends(open_db_session),
         user_principal: UserPrincipal = Depends(Authorizations([RoleEnum.ADMIN, RoleEnum.COORDINATOR]))
 ) -> DisciplineSchema:
-    discipline = query_first(session, id)
+    discipline = query_first(session, id, user_principal)
     session.query(DisciplineModel).where(DisciplineModel.id == discipline.id).update(dto.model_dump())
     session.commit()
     session.refresh(discipline)
@@ -94,7 +97,7 @@ def delete_discipline(
         session: Session = Depends(open_db_session),
         user_principal: UserPrincipal = Depends(Authorizations([RoleEnum.ADMIN, RoleEnum.COORDINATOR]))
 ):
-    discipline = query_first(session, id)
+    discipline = query_first(session, id, user_principal)
     session.query(DisciplineModel).where(DisciplineModel.id == discipline.id).update({"deleted": True})
     session.commit()
     return {}

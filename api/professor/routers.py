@@ -52,7 +52,7 @@ def professors_pagination(
     if search:
         filters.append(ProfessorModel.fullname.icontains(search))
 
-    orders = [ProfessorModel.archived.desc()]
+    orders = [ProfessorModel.archived.desc(), ProfessorModel.fullname]
 
     return pagination(query, page, size, filters, orders)
 

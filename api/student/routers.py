@@ -56,7 +56,7 @@ def students_pagination(
     if search:
         filters.append(StudentModel.fullname.icontains(search))
 
-    orders = [StudentModel.archived.desc()]
+    orders = [StudentModel.archived.desc(), StudentModel.fullname]
 
     return pagination(query, page, size, filters, orders)
 

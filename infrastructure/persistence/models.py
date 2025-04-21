@@ -25,6 +25,11 @@ class UserModel(Entity):
     password = Column(LargeBinary, nullable=False)
     role = Column(Enum(RoleEnum), nullable=False)
     enabled = Column(Boolean, nullable=False, index=True, default=True)
+    student_id = Column(ForeignKey("students.id"))
+    professor_id = Column(ForeignKey("professors.id"))
+
+    student = relationship("StudentModel")
+    professor = relationship("ProfessorModel")
 
 
 class ProfessorModel(EntityBase, Entity):
@@ -62,7 +67,8 @@ class ClassroomModel(EntityBase, Entity):
     name = Column(String(32), nullable=False, index=True)
     shift = Column(Enum(ShiftEnum), nullable=False, index=True)
 
-    students: Mapped[List["StudentModel"]] = relationship("StudentModel", back_populates="classroom")
+    students: Mapped[List["StudentModel"]] = relationship("StudentModel", back_populates="classroom",
+                                                          order_by=StudentModel.fullname)
 
 
 class DisciplineModel(EntityBase, Entity):
@@ -88,7 +94,15 @@ class FrequencyModel(EntityBase, Entity):
     __tablename__ = "frequencies"
 
     date = Column(Date, nullable=False, index=True)
-    discipline_id: Mapped[str] = Column(ForeignKey("disciplines.id"), nullable=False)
+    discipline_id = Column(ForeignKey("disciplines.id"), nullable=False)
     discipline: Mapped["DisciplineModel"] = relationship("DisciplineModel")
     presents: Mapped[List["StudentModel"]] = relationship("StudentModel", secondary="frequencies_students")
 
+# class ScoreModel(EntityBase, Entity):
+#     __tablename__ = "scores"
+#
+#     value = Column(Numeric, nullable=False, index=True)
+#     student_id = Column(ForeignKey("students.id"), nullable=False)
+#     discipline_id = Column(ForeignKey("disciplines.id"), nullable=False)
+#     discipline: Mapped["DisciplineModel"] = relationship("DisciplineModel")
+#     student: Mapped["StudentModel"] = relationship("StudentModel")

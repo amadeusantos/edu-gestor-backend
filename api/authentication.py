@@ -27,6 +27,8 @@ def authenticated(
         return UserPrincipal(
             id=user.id,
             role=user.role,
+            student_id=user.student_id,
+            professor_id=user.professor_id,
         )
     except (jwt.InvalidTokenError, ValidationError, KeyError):
         raise TokenInvalidException()
