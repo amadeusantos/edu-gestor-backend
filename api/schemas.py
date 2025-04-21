@@ -46,3 +46,9 @@ class ProfessorMinimalSchema(BaseSchema):
     id: UUID
     fullname: str
     sex: SexEnum
+
+class DisciplineMinimalSchema(BaseSchema):
+    id: UUID
+    name: str
+    classroom_id: UUID
+    professor_id: UUID | None = None

@@ -1,7 +1,7 @@
 import uuid
 from typing import List
 
-from sqlalchemy import Column, UUID, Boolean, String, Enum, LargeBinary, Date, ForeignKey
+from sqlalchemy import Column, UUID, Boolean, String, Enum, LargeBinary, Date, ForeignKey, Table
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, Mapped
 
@@ -74,3 +74,21 @@ class DisciplineModel(EntityBase, Entity):
 
     professor: Mapped["ProfessorModel"] = relationship("ProfessorModel")
     classroom: Mapped["ClassroomModel"] = relationship("ClassroomModel")
+
+
+FrequencyStudentModel = Table(
+    "frequencies_students",
+    metadata,
+    Column("frequency_id", ForeignKey("frequencies.id")),
+    Column("student_id", ForeignKey("students.id"))
+)
+
+
+class FrequencyModel(EntityBase, Entity):
+    __tablename__ = "frequencies"
+
+    date = Column(Date, nullable=False, index=True)
+    discipline_id: Mapped[str] = Column(ForeignKey("disciplines.id"), nullable=False)
+    discipline: Mapped["DisciplineModel"] = relationship("DisciplineModel")
+    presents: Mapped[List["StudentModel"]] = relationship("StudentModel", secondary="frequencies_students")
+
