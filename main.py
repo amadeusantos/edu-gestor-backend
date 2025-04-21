@@ -23,7 +23,7 @@ async def health():
 
 @app.exception_handler(ServiceException)
 async def service_exception_handler(_, exc: ServiceException):
-    return JSONResponse(status_code=exc.status_code, content={"message": exc.message})
+    return JSONResponse(status_code=exc.status_code, content={"message": exc.message, "error_code": exc.error_code})
 
 
 app.include_router(auth_router)
