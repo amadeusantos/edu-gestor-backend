@@ -7,10 +7,12 @@ from uuid import uuid1
 # from alembic.config import Config
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+# from core.infrastructure.security.super_user import create_super_user
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import scoped_session, sessionmaker
 from api.routes import main_router
 from core.infrastructure.database.manage import engine
-# from core.infrastructure.security.super_user import create_super_user
 
 
 @asynccontextmanager
@@ -87,5 +89,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.exception_handler(IntegrityError)
+async def integrity_error_handler(request: Request, exc: IntegrityError):
+    return JSONResponse(
+        status_code=409,
+        content={"detail": "Record already exists"},
+    )
+
 
 app.include_router(main_router)
