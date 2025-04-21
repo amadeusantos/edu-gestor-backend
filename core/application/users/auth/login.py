@@ -1,14 +1,14 @@
 from fastapi import HTTPException, status
+from sqlalchemy.orm import Session
 from contracts.requests.auth_request import AuthenticationRequest
 from contracts.responses.auth_response import AuthenticationResponse
-from core.infrastructure.database.manage import DbSession
 from core.infrastructure.database.tables import User
 from core.infrastructure.security.jwt import create_access_token
 from core.infrastructure.security.password import verify_password
 
 
 def login(
-    login_request: AuthenticationRequest, db_session: DbSession
+    login_request: AuthenticationRequest, db_session: Session
 ) -> AuthenticationResponse:
     if (
         user := db_session.query(User).filter_by(email=login_request.email).first()
