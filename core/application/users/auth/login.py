@@ -1,25 +1,24 @@
 from fastapi import HTTPException, status
 from contracts.requests.auth_request import AuthenticationRequest
 from contracts.responses.auth_response import AuthenticationResponse
-from core.infrastructure.database.session import db_session, get_session
+from core.infrastructure.database.manage import DbSession
 from core.infrastructure.database.tables import User
 from core.infrastructure.security.jwt import create_access_token
 from core.infrastructure.security.password import verify_password
 
 
-@db_session
-def login(request_body: AuthenticationRequest, **kwargs) -> AuthenticationResponse:
-    session = get_session(**kwargs)
-
+def login(
+    login_request: AuthenticationRequest, db_session: DbSession
+) -> AuthenticationResponse:
     if (
-        user := session.query(User).filter_by(email=request_body.email).first()
+        user := db_session.query(User).filter_by(email=login_request.email).first()
     ) is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
         )
 
-    if not verify_password(request_body.password, user.password):
+    if not verify_password(login_request.password, user.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
