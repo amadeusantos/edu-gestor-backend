@@ -41,6 +41,7 @@ class ProfessorModel(EntityBase, Entity):
     phone = Column(String(15))
     date_of_birth = Column(Date, nullable=False)
     sex = Column(Enum(SexEnum), nullable=False)
+    disciplines: Mapped[List["DisciplineModel"]] = relationship("DisciplineModel")
 
 
 class StudentModel(EntityBase, Entity):
