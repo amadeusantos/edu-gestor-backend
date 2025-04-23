@@ -15,4 +15,4 @@ class TokenInvalidException(ServiceException):
 
 class ForbiddenException(ServiceException):
     def __init__(self):
-        super().__init__(401, "user not authorized", 3)
+        super().__init__(403, "user not authorized", 3)

@@ -41,7 +41,7 @@ class ProfessorModel(EntityBase, Entity):
     phone = Column(String(15))
     date_of_birth = Column(Date, nullable=False)
     sex = Column(Enum(SexEnum), nullable=False)
-    disciplines: Mapped[List["DisciplineModel"]] = relationship("DisciplineModel")
+    disciplines: Mapped[List["DisciplineModel"]] = relationship("DisciplineModel", back_populates="professor")
 
 
 class StudentModel(EntityBase, Entity):
@@ -70,6 +70,7 @@ class ClassroomModel(EntityBase, Entity):
 
     students: Mapped[List["StudentModel"]] = relationship("StudentModel", back_populates="classroom",
                                                           order_by=StudentModel.fullname)
+    disciplines: Mapped[List["DisciplineModel"]] = relationship("DisciplineModel", back_populates="classroom")
 
 
 class DisciplineModel(EntityBase, Entity):
@@ -98,6 +99,26 @@ class FrequencyModel(EntityBase, Entity):
     discipline_id = Column(ForeignKey("disciplines.id"), nullable=False)
     discipline: Mapped["DisciplineModel"] = relationship("DisciplineModel")
     presents: Mapped[List["StudentModel"]] = relationship("StudentModel", secondary="frequencies_students")
+
+
+ActivityDisciplineModel = Table(
+    "activities_disciplines",
+    metadata,
+    Column("activity_id", ForeignKey("activities.id")),
+    Column("discipline_id", ForeignKey("disciplines.id"))
+)
+
+
+class ActivityModel(EntityBase, Entity):
+    __tablename__ = "activities"
+
+    title = Column(String(64), nullable=False, index=True)
+    description = Column(String(256), nullable=False, index=True)
+    date = Column(Date, nullable=False, index=True)
+    is_exam = Column(Boolean, nullable=False, index=True, default=False)
+    professor_id = Column(ForeignKey("professors.id"))
+    professor: Mapped["ProfessorModel"] = relationship("ProfessorModel")
+    disciplines: Mapped[List["DisciplineModel"]] = relationship("DisciplineModel", secondary="activities_disciplines")
 
 # class ScoreModel(EntityBase, Entity):
 #     __tablename__ = "scores"
