@@ -46,7 +46,6 @@ class Profile(BaseEntity):  # type: ignore
     __tablename__ = "profiles"
     cpf: Mapped[str] = mapped_column(String(14), unique=True)
     enrollment: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
-    email: Mapped[str] = mapped_column(String(64), index=True)
     phone: Mapped[str] = mapped_column(String(15))
     fullname: Mapped[str] = mapped_column(String(64))
     sex: Mapped[Optional[bool]] = mapped_column(nullable=True)
