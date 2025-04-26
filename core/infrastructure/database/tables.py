@@ -32,7 +32,7 @@ class User(BaseEntity):  # type: ignore
     profile_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("profiles.id"), nullable=False
     )
-    profile: Mapped["Profile"] = relationship(back_populates="user")
+    profile: Mapped["Profile"] = relationship(back_populates="user", uselist=False)
 
 
 class RoleEnum(Enum):
@@ -54,3 +54,4 @@ class Profile(BaseEntity):  # type: ignore
     mother_name: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     responsible: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     role: Mapped[RoleEnum] = mapped_column(SqlEnum(RoleEnum))
+    user: Mapped["User"] = relationship(back_populates="profile", uselist=False)

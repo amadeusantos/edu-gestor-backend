@@ -13,6 +13,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import scoped_session, sessionmaker
 from api.routes import main_router
 from core.infrastructure.database.manage import engine
+from core.infrastructure.security.super_user import create_super_user
 
 
 @asynccontextmanager
@@ -21,9 +22,7 @@ async def lifespan(app: FastAPI):
     # config_ini_file = f"{os.getcwd()}/alembic.ini"
     # alembic_cfg = Config(config_ini_file)
     # command.upgrade(alembic_cfg, "head")
-
-    # TODO: Super user initialization
-    # create_super_user(engine=app.state.db_engine)
+    create_super_user()
 
     yield
 
