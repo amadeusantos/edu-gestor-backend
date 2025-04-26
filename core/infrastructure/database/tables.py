@@ -44,9 +44,9 @@ class RoleEnum(Enum):
 
 class Profile(BaseEntity):  # type: ignore
     __tablename__ = "profiles"
-    cpf: Mapped[str] = mapped_column(String(14), unique=True)
+    cpf: Mapped[str] = mapped_column(String(11), unique=True)
     enrollment: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
-    phone: Mapped[str] = mapped_column(String(15))
+    phone: Mapped[str] = mapped_column(String(11))
     fullname: Mapped[str] = mapped_column(String(64))
     sex: Mapped[Optional[bool]] = mapped_column(nullable=True)
     date_of_birth: Mapped[str] = mapped_column(DateTime)
