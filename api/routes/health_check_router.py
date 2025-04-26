@@ -14,8 +14,8 @@ router = APIRouter()
     },
 )
 def health_check(request: Request) -> None:
-    if not hasattr(request.app.state, "db_engine") or not request.app.state.db_engine:
+    if not hasattr(request.state, "db") or not request.state.db:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Database engine is not available",
+            detail="Database session is not available",
         )
