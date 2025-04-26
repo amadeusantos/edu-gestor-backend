@@ -4,9 +4,9 @@ from enum import Enum
 from typing import Optional
 from sqlalchemy import UUID, DateTime
 from sqlalchemy import Enum as SqlEnum
-from sqlalchemy import String, func
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 Base = declarative_base()
 
@@ -24,24 +24,26 @@ class BaseEntity(Base):  # type: ignore
     )
 
 
-class RoleEnum(Enum):
-    PROFESSOR = "PROFESSOR"
-    COORDINATOR = "COORDINATOR"
-    ADMIN = "ADMIN"
-    STUDENT = "STUDENT"
-    RESPONSIBLE = "RESPONSIBLE"
-
-
 class User(BaseEntity):  # type: ignore
     __tablename__ = "users"
     email: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str] = mapped_column()
-    role: Mapped[RoleEnum] = mapped_column(SqlEnum(RoleEnum))
     enabled: Mapped[bool] = mapped_column(default=True)
+    profile_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("profiles.id"), nullable=False
+    )
+    profile: Mapped["Profile"] = relationship(back_populates="user")
 
 
-class UniversityMember(BaseEntity):  # type: ignore
-    __tablename__ = "university_members"
+class RoleEnum(Enum):
+    ADMIN = "ADMIN"
+    COORDINATOR = "COORDINATOR"
+    PROFESSOR = "PROFESSOR"
+    STUDENT = "STUDENT"
+
+
+class Profile(BaseEntity):  # type: ignore
+    __tablename__ = "profiles"
     cpf: Mapped[str] = mapped_column(String(14), unique=True)
     enrollment: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     email: Mapped[str] = mapped_column(String(64), index=True)
@@ -52,3 +54,4 @@ class UniversityMember(BaseEntity):  # type: ignore
     father_name: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     mother_name: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     responsible: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    role: Mapped[RoleEnum] = mapped_column(SqlEnum(RoleEnum))
