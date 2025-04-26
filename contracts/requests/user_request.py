@@ -8,6 +8,7 @@ from core.infrastructure.database.tables import Profile, RoleEnum, User
 class CreateUserRequest(BaseModel):
     email: EmailStr
     password: str
+    profile_id: str
 
     @field_validator("password")
     def validate_password(cls, password: str) -> str:
@@ -21,7 +22,9 @@ class CreateUserRequest(BaseModel):
         return password
 
     def to_row(self) -> User:
-        return User(email=str(self.email), password=self.password)
+        return User(
+            email=str(self.email), password=self.password, profile_id=self.profile_id
+        )
 
 
 class CreateProfileRequest(BaseModel):

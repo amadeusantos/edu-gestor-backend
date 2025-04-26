@@ -8,7 +8,6 @@ class UserResponse(BaseModel):
     created_at: str
     updated_at: Optional[str]
     email: str
-    role: str
     enabled: bool
 
     @classmethod
@@ -18,7 +17,6 @@ class UserResponse(BaseModel):
             created_at=row.created_at.isoformat(),
             updated_at=row.updated_at.isoformat() if row.updated_at else None,
             email=row.email,
-            role=row.role.value,
             enabled=row.enabled,
         )
 
