@@ -45,7 +45,7 @@ class Authorizer:
         self.roles = roles
 
     def __call__(self, current_user=Depends(get_current_user)):
-        if not current_user.role in [role for role in self.roles]:
+        if not current_user.profile.role in [role for role in self.roles]:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="You do not have permission to perform this action",
