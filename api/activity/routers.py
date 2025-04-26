@@ -15,8 +15,7 @@ from api.authentication import Authorizations
 from api.schemas import UserPrincipal
 from infrastructure.persistence.db_session import open_db_session
 from infrastructure.persistence.enums import RoleEnum
-from infrastructure.persistence.models import ActivityModel, DisciplineModel, StudentModel, ProfessorModel, \
-    ClassroomModel
+from infrastructure.persistence.models import ActivityModel, DisciplineModel, StudentModel, ClassroomModel
 
 router = APIRouter(prefix="/activities", tags=["Activity"])
 
@@ -25,9 +24,13 @@ def query_activities(session: Session, user_principal: UserPrincipal):
     filters = []
 
     if not (user_principal.role == RoleEnum.COORDINATOR.value or user_principal.role == RoleEnum.ADMIN.value):
-        classrooms = session.query(ClassroomModel.id).where(
-            or_(ClassroomModel.students.any(StudentModel.id == user_principal.student_id),
-                ClassroomModel.disciplines.any(DisciplineModel.professor_id == user_principal.professor_id))).all()
+        if user_principal.role == RoleEnum.PROFESSOR.value:
+            classrooms = session.query(ClassroomModel.id).where(
+                ClassroomModel.disciplines.any(DisciplineModel.professor_id == user_principal.professor_id)).all()
+        else:
+            classrooms = session.query(ClassroomModel.id).where(
+                ClassroomModel.students.any(StudentModel.id == user_principal.student_id)).all()
+
         classrooms_ids = [c.id for c in classrooms]
         filters.append(ActivityModel.disciplines.any(DisciplineModel.classroom_id.in_(classrooms_ids)))
 
