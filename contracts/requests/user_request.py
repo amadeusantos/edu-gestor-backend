@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, EmailStr, field_validator
@@ -7,14 +8,20 @@ from core.infrastructure.database.tables import Profile, RoleEnum, User
 class CreateUserRequest(BaseModel):
     email: EmailStr
     password: str
-    role: RoleEnum
+
+    @field_validator("password")
+    def validate_password(cls, password: str) -> str:
+        pattern = re.compile(
+            r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+        )
+        if not pattern.match(password):
+            raise ValueError(
+                "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character."
+            )
+        return password
 
     def to_row(self) -> User:
-        return User(
-            email=str(self.email),
-            password=self.password,
-            role=self.role,
-        )
+        return User(email=str(self.email), password=self.password)
 
 
 class CreateProfileRequest(BaseModel):
