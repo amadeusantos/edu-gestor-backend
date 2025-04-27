@@ -64,7 +64,7 @@ def get_by_attribute(
     return entity
 
 
-def update(session: Session, model: Type[SqlAlchemyModel], id: int, **kwargs) -> None:
+def update(session: Session, model: Type[SqlAlchemyModel], id: str, **kwargs) -> None:
     try:
         entity_update_status = (
             session.query(model).filter(getattr(model, "id") == id).update(kwargs)  # type: ignore
