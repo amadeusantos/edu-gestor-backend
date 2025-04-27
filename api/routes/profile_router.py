@@ -52,7 +52,7 @@ def create_profile(
         status.HTTP_403_FORBIDDEN: {"model": ProblemResponse},
     },
 )
-def get_profiles(
+def get_all_profiles(
     filter_query: Annotated[ProfileFiltersRequest, Query()],
     db_session: DbSession,
     response: Response,
