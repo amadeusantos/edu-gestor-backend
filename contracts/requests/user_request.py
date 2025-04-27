@@ -1,7 +1,8 @@
 import re
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator
+from sqlalchemy import BinaryExpression, ColumnElement
 from core.infrastructure.database.tables import Profile, RoleEnum, User
 
 
@@ -72,3 +73,22 @@ class CreateProfileRequest(BaseModel):
             responsible=self.responsible,
             role=self.role,
         )
+
+
+class ProfileFiltersRequest(BaseModel):
+    page: int = Field(default=1, ge=1)
+    page_size: int = Field(default=10, ge=1, le=100)
+    cpf: Optional[str] = Field(default=None, max_length=11)
+    fullname: Optional[str] = Field(default=None, max_length=64)
+    role: Optional[RoleEnum] = Field(default=None)
+
+    def to_query_filters(self) -> list:
+        filters: list[BinaryExpression[bool] | ColumnElement[bool] | None] = []
+        if self.cpf:
+            filters.append(Profile.cpf.ilike(f"%{self.cpf}%"))
+        if self.fullname:
+            filters.append(Profile.fullname.ilike(f"%{self.fullname}%"))
+        if self.role:
+            filters.append(Profile.role == self.role)
+
+        return filters
