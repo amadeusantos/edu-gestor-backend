@@ -6,7 +6,12 @@ from contracts.responses.user_response import ProfileResponse
 from core.application.users.profiles.create_profile import (
     create_profile as create_profile_service,
 )
-from core.application.users.profiles.get_all_profiles import get_all_profiles
+from core.application.users.profiles.get_all_profiles import (
+    get_all_profiles as get_all_profiles_service,
+)
+from core.application.users.profiles.get_profile_by_id import (
+    get_profile_by_id as get_profile_by_id_service,
+)
 from core.infrastructure.database.manage import DbSession
 from core.infrastructure.database.tables import RoleEnum, User
 from core.infrastructure.security.authorizer import Authorizer
@@ -45,9 +50,9 @@ def get_profiles(
     filter_query: Annotated[ProfileFiltersRequest, Query()],
     db_session: DbSession,
     response: Response,
-    _: Annotated[User, Depends(Authorizer([RoleEnum.ADMIN]))],
+    _: Annotated[User, Depends(Authorizer([RoleEnum.ADMIN, RoleEnum.COORDINATOR]))],
 ) -> list[ProfileResponse]:
-    profiles, count = get_all_profiles(filter_query, db_session)
+    profiles, count = get_all_profiles_service(filter_query, db_session)
 
     response.headers["X-Total-Count"] = str(count)
     response.headers["X-Page"] = str(filter_query.page)
@@ -58,3 +63,21 @@ def get_profiles(
     )
 
     return profiles
+
+
+@router.get(
+    "/{id}",
+    status_code=status.HTTP_200_OK,
+    response_model=ProfileResponse,
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {"model": ProblemResponse},
+        status.HTTP_403_FORBIDDEN: {"model": ProblemResponse},
+        status.HTTP_404_NOT_FOUND: {"model": ProblemResponse},
+    },
+)
+def get_profile_by_id(
+    id: str,
+    db_session: DbSession,
+    _: Annotated[User, Depends(Authorizer([RoleEnum.ADMIN, RoleEnum.COORDINATOR]))],
+) -> ProfileResponse:
+    return get_profile_by_id_service(id, db_session)
