@@ -30,7 +30,7 @@ class User(BaseEntity):  # type: ignore
     password: Mapped[str] = mapped_column()
     enabled: Mapped[bool] = mapped_column(default=True)
     profile_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("profiles.id"), nullable=False
+        ForeignKey("profiles.id", ondelete="CASCADE"), nullable=False
     )
     profile: Mapped["Profile"] = relationship(back_populates="user", uselist=False)
 
@@ -54,4 +54,6 @@ class Profile(BaseEntity):  # type: ignore
     mother_name: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     responsible: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     role: Mapped[RoleEnum] = mapped_column(SqlEnum(RoleEnum))
-    user: Mapped["User"] = relationship(back_populates="profile", uselist=False)
+    user: Mapped["User"] = relationship(
+        back_populates="profile", cascade="all, delete-orphan", uselist=False
+    )

@@ -79,7 +79,7 @@ def update(session: Session, model: Type[SqlAlchemyModel], id: str, **kwargs) ->
         handle_db_error(session, model, e)  # type: ignore
 
 
-def delete(session: Session, model: Type[SqlAlchemyModel], id: int) -> None:
+def delete(session: Session, model: Type[SqlAlchemyModel], id: str) -> None:
     entity = get_by_attribute(session, model, "id", id)
     session.delete(entity)
 

@@ -6,6 +6,9 @@ from contracts.responses.user_response import ProfileResponse
 from core.application.users.profiles.create_profile import (
     create_profile as create_profile_service,
 )
+from core.application.users.profiles.delete_profile import (
+    delete_profile as delete_profile_service,
+)
 from core.application.users.profiles.get_all_profiles import (
     get_all_profiles as get_all_profiles_service,
 )
@@ -103,3 +106,21 @@ def update_profile(
     _: Annotated[User, Depends(Authorizer([RoleEnum.ADMIN, RoleEnum.COORDINATOR]))],
 ) -> None:
     update_profile_service(id, update_profile_request, db_session)
+
+
+@router.delete(
+    "/{id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_model=None,
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {"model": ProblemResponse},
+        status.HTTP_403_FORBIDDEN: {"model": ProblemResponse},
+        status.HTTP_404_NOT_FOUND: {"model": ProblemResponse},
+    },
+)
+def delete_profile(
+    id: str,
+    db_session: DbSession,
+    _: Annotated[User, Depends(Authorizer([RoleEnum.ADMIN, RoleEnum.COORDINATOR]))],
+) -> None:
+    delete_profile_service(id, db_session)
