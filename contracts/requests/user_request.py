@@ -28,7 +28,7 @@ class CreateUserRequest(BaseModel):
         )
 
 
-class CreateProfileRequest(BaseModel):
+class ProfileRequest(BaseModel):
     cpf: str
     enrollment: Optional[str] = None
     phone: str

@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, Query, Response, status
-from contracts.requests.user_request import CreateProfileRequest, ProfileFiltersRequest
+from contracts.requests.user_request import ProfileFiltersRequest, ProfileRequest
 from contracts.responses.base import ProblemResponse
 from contracts.responses.user_response import ProfileResponse
 from core.application.users.profiles.create_profile import (
@@ -30,7 +30,7 @@ router = APIRouter()
     },
 )
 def create_profile(
-    create_profile_request: CreateProfileRequest,
+    create_profile_request: ProfileRequest,
     db_session: DbSession,
     _: Annotated[User, Depends(Authorizer([RoleEnum.ADMIN, RoleEnum.COORDINATOR]))],
 ) -> ProfileResponse:
