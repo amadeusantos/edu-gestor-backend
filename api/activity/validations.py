@@ -6,7 +6,6 @@ from infrastructure.persistence.enums import RoleEnum
 
 def validate_create_activities(activity: ActivityCreateSchema, user_principal: UserPrincipal):
     if user_principal.role == RoleEnum.COORDINATOR.value or user_principal.role == RoleEnum.ADMIN.value:
-        print(user_principal.role)
         if not activity.professor_id:
             raise ActivityProfessorIdException()
         return activity

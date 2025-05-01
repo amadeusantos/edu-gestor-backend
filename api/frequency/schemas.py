@@ -3,7 +3,6 @@ from uuid import UUID
 from datetime import date, datetime
 
 from api.schemas import BaseSchema, DisciplineMinimalSchema, StudentMinimalSchema, PaginationSchema, InputSchema
-from api.student.schemas import StudentUpdateSchema
 
 
 class FrequencySchema(BaseSchema):

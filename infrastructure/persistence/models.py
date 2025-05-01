@@ -1,8 +1,9 @@
 import uuid
 from typing import List
 
-from sqlalchemy import Column, UUID, Boolean, String, Enum, LargeBinary, Date, ForeignKey, Table
+from sqlalchemy import Column, UUID, Boolean, String, Enum, LargeBinary, Date, ForeignKey, Table, Float
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship, Mapped
 
 from infrastructure.persistence.enums import RoleEnum, SexEnum, ShiftEnum
@@ -120,11 +121,32 @@ class ActivityModel(EntityBase, Entity):
     professor: Mapped["ProfessorModel"] = relationship("ProfessorModel")
     disciplines: Mapped[List["DisciplineModel"]] = relationship("DisciplineModel", secondary="activities_disciplines")
 
-# class ScoreModel(EntityBase, Entity):
-#     __tablename__ = "scores"
-#
-#     value = Column(Numeric, nullable=False, index=True)
-#     student_id = Column(ForeignKey("students.id"), nullable=False)
-#     discipline_id = Column(ForeignKey("disciplines.id"), nullable=False)
-#     discipline: Mapped["DisciplineModel"] = relationship("DisciplineModel")
-#     student: Mapped["StudentModel"] = relationship("StudentModel")
+
+class ExamModel(EntityBase, Entity):
+    __tablename__ = "exams"
+
+    title = Column(String(64), nullable=False, index=True)
+    date = Column(Date, nullable=False, index=True)
+    is_finish = Column(Boolean, nullable=False, index=True, default=False)
+    is_recovery = Column(Boolean, nullable=False, index=True, default=False)
+    discipline_id = Column(ForeignKey("disciplines.id"))
+    discipline: Mapped["DisciplineModel"] = relationship("DisciplineModel")
+    scores: Mapped[List["ScoreModel"]] = relationship("ScoreModel", back_populates="exam")
+    activity_id = Column(ForeignKey("activities.id"))
+
+    activity: Mapped["ActivityModel"] = relationship("ActivityModel")
+
+
+class ScoreModel(EntityBase, Entity):
+    __tablename__ = "scores"
+
+    value = Column(Float, index=True)
+    is_absent = Column(Boolean, nullable=False, index=True, default=False)
+    student_id = Column(ForeignKey("students.id"), nullable=False)
+    exam_id = Column(ForeignKey("exams.id"), nullable=False)
+    exam: Mapped["ExamModel"] = relationship("ExamModel")
+    student: Mapped["StudentModel"] = relationship("StudentModel")
+
+    @hybrid_property
+    def fullname(self):
+        return self.student.fullname

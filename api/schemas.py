@@ -1,3 +1,4 @@
+from decimal import Decimal
 from uuid import UUID
 from typing import List
 
@@ -52,3 +53,9 @@ class DisciplineMinimalSchema(BaseSchema):
     name: str
     classroom_id: UUID
     professor_id: UUID | None = None
+
+class ScoreMinimalSchema(BaseSchema):
+    id: UUID
+    value: Decimal
+    is_absent: bool
+    fullname: str
