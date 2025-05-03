@@ -1,3 +1,4 @@
+from decimal import Decimal
 from uuid import UUID
 from datetime import date, datetime
 from typing import List
@@ -29,6 +30,19 @@ class StudentSchema(BaseSchema):
 
 class StudentPaginationSchema(PaginationSchema):
     results: List[StudentSchema]
+
+
+class StudentInfoSchema(BaseSchema):
+    discipline_id: UUID
+    discipline_name: str
+    professor_name: str
+    faults: int
+    classes: int
+    average_grade: float
+
+
+class StudentInfoPaginationSchema(PaginationSchema):
+    results: List[StudentInfoSchema]
 
 
 class StudentUpdateSchema(InputSchema):
