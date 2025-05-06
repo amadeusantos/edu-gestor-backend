@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from api.authentication import Authorizations
 from api.database import pagination
 from api.schemas import UserPrincipal
+from api.student.actions import actions_delete_student
 from api.student.exceptions import StudentNotFoundException
 from api.student.repositories import get_info
 from api.student.schemas import StudentCreateSchema, StudentSchema, StudentUpdateSchema, StudentPaginationSchema, \
@@ -83,7 +84,7 @@ def students_pagination(
 
 
 @router.get("/cpf/{cpf}")
-def get_student(
+def get_student_cpf(
         cpf: str,
         session: Session = Depends(open_db_session),
         user_principal: UserPrincipal = Depends(Authorizations([RoleEnum.ADMIN, RoleEnum.COORDINATOR]))
@@ -137,6 +138,7 @@ def delete_student(
         user_principal: UserPrincipal = Depends(Authorizations([RoleEnum.ADMIN, RoleEnum.COORDINATOR]))
 ):
     student = query_first(session, id)
-    session.query(StudentModel).where(StudentModel.id == student.id).update({"deleted": True})
+    session.query(StudentModel).where(StudentModel.id == student.id).update({"deleted": True, "classroom_id": None})
+    actions_delete_student(session, id)
     session.commit()
     return {}
