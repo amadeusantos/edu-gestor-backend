@@ -13,3 +13,5 @@ class TokenSchema(BaseSchema):
 class AuthenticatedSchema(BaseSchema):
     id: UUID
     role: str
+    professor_id: UUID | None = None
+    student_id: UUID | None = None

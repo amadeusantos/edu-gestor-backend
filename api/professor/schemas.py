@@ -6,7 +6,7 @@ from pydantic import field_validator
 
 from api.professor.exceptions import ProfessorEmailInvalidException, ProfessorCPFInvalidException, \
     ProfessorPhoneInvalidException
-from api.schemas import PaginationSchema, BaseSchema, InputSchema
+from api.schemas import PaginationSchema, BaseSchema, InputSchema, DisciplineMinimalSchema
 from api.utils import validate_email, validate_cpf, format_cpf, validate_phone, format_phone
 from infrastructure.persistence.enums import SexEnum
 
@@ -20,7 +20,7 @@ class ProfessorSchema(BaseSchema):
     date_of_birth: date
     sex: SexEnum
     archived: bool
-    disciplines: List = []
+    disciplines: List[DisciplineMinimalSchema] = []
 
 
 class ProfessorPaginationSchema(PaginationSchema):

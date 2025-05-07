@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from api.authentication import Authorizations
 from api.database import pagination
+from api.professor.actions import actions_delete_professor
 from api.professor.exceptions import ProfessorNotFoundException
 from api.professor.schemas import ProfessorPaginationSchema, ProfessorCreateSchema, ProfessorSchema, \
     ProfessorUpdateSchema
@@ -52,7 +53,7 @@ def professors_pagination(
     if search:
         filters.append(ProfessorModel.fullname.icontains(search))
 
-    orders = [ProfessorModel.archived.desc()]
+    orders = [ProfessorModel.archived.desc(), ProfessorModel.fullname]
 
     return pagination(query, page, size, filters, orders)
 
@@ -113,5 +114,6 @@ def delete_professor(
 ):
     professor = query_first(session, id)
     session.query(ProfessorModel).where(ProfessorModel.id == professor.id).update({"deleted": True})
+    actions_delete_professor(session, id)
     session.commit()
     return {}

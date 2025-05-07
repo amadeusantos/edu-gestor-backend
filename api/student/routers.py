@@ -7,13 +7,16 @@ from sqlalchemy.orm import Session
 from api.authentication import Authorizations
 from api.database import pagination
 from api.schemas import UserPrincipal
+from api.student.actions import actions_delete_student
 from api.student.exceptions import StudentNotFoundException
-from api.student.schemas import StudentCreateSchema, StudentSchema, StudentUpdateSchema, StudentPaginationSchema
+from api.student.repositories import get_info
+from api.student.schemas import StudentCreateSchema, StudentSchema, StudentUpdateSchema, StudentPaginationSchema, \
+    StudentInfoPaginationSchema
 from api.student.validations import validate_create_student, validate_update_student
 from api.utils import format_cpf
 from infrastructure.persistence.db_session import open_db_session
 from infrastructure.persistence.enums import RoleEnum
-from infrastructure.persistence.models import StudentModel
+from infrastructure.persistence.models import StudentModel, FrequencyModel
 
 router = APIRouter(prefix="/students", tags=["Student"])
 
@@ -31,6 +34,7 @@ def query_first(session: Session, id: UUID):
 
     return student
 
+
 def query_student_by_cpf(session: Session, cpf: str):
     query = query_students(session)
     student = query.where(StudentModel.cpf == cpf).first()
@@ -39,6 +43,24 @@ def query_student_by_cpf(session: Session, cpf: str):
         raise StudentNotFoundException()
 
     return student
+
+
+@router.get("/info")
+def info_student(
+        page: int = 1,
+        size: int = 10,
+        student_id: UUID | None = Query(default=None),
+        session: Session = Depends(open_db_session),
+        user_principal: UserPrincipal = Depends(Authorizations(
+            [RoleEnum.ADMIN, RoleEnum.COORDINATOR, RoleEnum.PROFESSOR, RoleEnum.STUDENT, RoleEnum.RESPONSIBLE]
+        ))
+) -> StudentInfoPaginationSchema:
+    if user_principal.role in [RoleEnum.STUDENT.value, RoleEnum.RESPONSIBLE.value]:
+        student = query_first(session, user_principal.student_id)
+    else:
+        student = query_first(session, student_id)
+
+    return get_info(session, student.id, page, size)
 
 
 @router.get("")
@@ -56,18 +78,20 @@ def students_pagination(
     if search:
         filters.append(StudentModel.fullname.icontains(search))
 
-    orders = [StudentModel.archived.desc()]
+    orders = [StudentModel.archived.desc(), StudentModel.fullname]
 
     return pagination(query, page, size, filters, orders)
 
+
 @router.get("/cpf/{cpf}")
-def get_student(
+def get_student_cpf(
         cpf: str,
         session: Session = Depends(open_db_session),
         user_principal: UserPrincipal = Depends(Authorizations([RoleEnum.ADMIN, RoleEnum.COORDINATOR]))
 ) -> StudentSchema:
     cpf = format_cpf(cpf)
     return query_student_by_cpf(session, cpf)
+
 
 @router.get("/{id}")
 def get_student(
@@ -114,6 +138,7 @@ def delete_student(
         user_principal: UserPrincipal = Depends(Authorizations([RoleEnum.ADMIN, RoleEnum.COORDINATOR]))
 ):
     student = query_first(session, id)
-    session.query(StudentModel).where(StudentModel.id == student.id).update({"deleted": True})
+    session.query(StudentModel).where(StudentModel.id == student.id).update({"deleted": True, "classroom_id": None})
+    actions_delete_student(session, id)
     session.commit()
     return {}

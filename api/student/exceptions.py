@@ -3,16 +3,16 @@ from api.exceptions import ServiceException
 
 class StudentNotFoundException(ServiceException):
     def __init__(self):
-        super().__init__(404, "Student not found")
+        super().__init__(404, "Student not found", 200)
 
 
 class StudentCPFAlreadyExistsException(ServiceException):
     def __init__(self):
-        super().__init__(409, "Student CPF already exists")
+        super().__init__(409, "Student CPF already exists", 201)
 
 class StudentEnrollmentAlreadyExistsException(ServiceException):
     def __init__(self):
-        super().__init__(409, "Student enrollment already exists")
+        super().__init__(409, "Student enrollment already exists", 202)
 
 class StudentCPFInvalidException(ValueError):
     def __init__(self):

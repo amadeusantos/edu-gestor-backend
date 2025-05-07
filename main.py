@@ -6,6 +6,12 @@ from api.auth.routers import router as auth_router
 from api.user.routers import router as user_router
 from api.professor.routers import router as professor_router
 from api.student.routers import router as student_router
+from api.classroom.routers import router as classroom_router
+from api.discipline.routers import router as discipline_router
+from api.frequency.routers import router as frequency_router
+from api.activity.routers import router as activity_router
+from api.exam.routers import router as exam_router
+from api.score.routers import router as score_router
 from api.exceptions import ServiceException
 
 app = FastAPI()
@@ -20,10 +26,16 @@ async def health():
 
 @app.exception_handler(ServiceException)
 async def service_exception_handler(_, exc: ServiceException):
-    return JSONResponse(status_code=exc.status_code, content={"message": exc.message})
+    return JSONResponse(status_code=exc.status_code, content={"message": exc.message, "error_code": exc.error_code})
 
 
 app.include_router(auth_router)
 app.include_router(user_router)
 app.include_router(professor_router)
 app.include_router(student_router)
+app.include_router(classroom_router)
+app.include_router(discipline_router)
+app.include_router(frequency_router)
+app.include_router(activity_router)
+app.include_router(exam_router)
+app.include_router(score_router)
